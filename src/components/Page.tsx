@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, TextField, Typography } from "@mui/material";
+import { Button, Container, Input, Typography } from "@mui/material";
 
 const Page: React.FC = () => {
   const [numSpaces, setNumSpaces] = useState(0);
@@ -40,14 +40,14 @@ const Page: React.FC = () => {
         <Typography variant="body1" gutterBottom>
           Please enter the number of parking spaces
         </Typography>
-        <TextField
+        <Input
           type="number"
           value={numSpaces}
           onChange={handleChange}
           placeholder="Enter the Parking Space"
           id="parking-create-text-input"
           // ID for the text input
-          inputProps={{ style: { color: "white" } }}
+          inputProps={{ style: { color: "white" }, pattern: "[1,4]" }}
           sx={{
             mb: 2,
             borderRadius: "10px",

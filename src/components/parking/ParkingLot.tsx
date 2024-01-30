@@ -1,25 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, Container, Typography } from "@mui/material";
 import ParkingSpace from "./ParkingSpace";
 import CarRegistrationModal from "../registeration/CarRegisterationModal";
+import { useParkingContext } from "../../context/ParkingContext";
 
 const ParkingLot: React.FC = () => {
   const { numSpaces } = useParams();
   const spaces = numSpaces || "0";
 
-  // Allocating spaces
-  const parkingSpaceDesign = Array.from(
-    { length: parseInt(spaces) },
-    (_m, index) => ({
-      id: index + 1,
-      occupied: false,
-      registration: "",
-      entryTime: null,
-    })
-  );
+  const {
+    state: { parkingSpaces },
+    dispatch,
+  } = useParkingContext();
+
+  useEffect(() => {
+    const parkingSpaceDesign = Array.from(
+      { length: parseInt(spaces) },
+      (_m, index) => ({
+        id: index + 1,
+        occupied: false,
+        registration: "",
+        entryTime: null,
+      })
+    );
+    dispatch({ type: "SET_PARKING_SPACES", payload: parkingSpaceDesign });
+  }, [dispatch, spaces]);
+
   const [showModal, setShowModal] = React.useState<boolean>(false);
-  const [parkingSpaces, setParkingSpaces] = useState(parkingSpaceDesign);
+  // const [parkingSpaces, setParkingSpaces] = useState(parkingSpaceDesign);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -30,33 +39,25 @@ const ParkingLot: React.FC = () => {
   };
 
   const handleCarRegistration = (registration: string) => {
-    const availableSpace = parkingSpaces.find((space) => !space.occupied);
-    if (availableSpace) {
-      const updatedSpaces = parkingSpaces.map((space) =>
-        space.id === availableSpace.id
-          ? { ...space, occupied: true, registration }
-          : space
-      );
-      setParkingSpaces(updatedSpaces);
+    const availableSpaces = parkingSpaces.filter((space) => !space.occupied);
+    if (availableSpaces.length > 0) {
+      const randomIndex = Math.floor(Math.random() * availableSpaces.length);
+      const randomSpace = availableSpaces[randomIndex];
+      dispatch({
+        type: "ADD_CAR",
+        payload: { spaceId: randomSpace.id, registration },
+      });
       setShowModal(false);
     } else {
-      alert("Parking is fullll.");
+      alert("Parking is full.");
     }
   };
 
   const handleDeallocate = (spaceId: number) => {
-    const updatedSpaces = parkingSpaces.map((space) =>
-      space.id === spaceId
-        ? { ...space, occupied: false, registration: "", entryTime: null }
-        : space
-    );
-
-    setParkingSpaces(updatedSpaces);
-  };
-
-  const handleConfirmPayment = () => {
-    // Handle payment confirmation logic here
-    console.log("Payment confirmed.");
+    dispatch({
+      type: "REMOVE_CAR",
+      payload: spaceId,
+    });
   };
 
   const isParkingLotFull = parkingSpaces.every((space) => space.occupied);
@@ -81,7 +82,6 @@ const ParkingLot: React.FC = () => {
           {parkingSpaces.map((spaceNumber, i) => (
             <ParkingSpace
               key={i}
-              onConfirmPayment={handleConfirmPayment}
               onDeallocate={() => handleDeallocate(spaceNumber.id)}
               space={spaceNumber}
             />

@@ -1,7 +1,6 @@
-// ParkingDetailsModal.tsx
 import React, { useEffect, useState } from "react";
 import Modal from "@mui/material/Modal";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, CircularProgress } from "@mui/material";
 
 interface ParkingDetailsModalProps {
   open: boolean;
@@ -12,7 +11,6 @@ interface ParkingDetailsModalProps {
     entryTime: Date | null;
   };
   onDeallocate: () => void;
-  onConfirmPayment: () => void;
 }
 
 const ParkingDetailsModal: React.FC<ParkingDetailsModalProps> = ({
@@ -20,9 +18,10 @@ const ParkingDetailsModal: React.FC<ParkingDetailsModalProps> = ({
   onClose,
   space,
   onDeallocate,
-  onConfirmPayment,
 }) => {
   const [duration, setDuration] = useState<number>(0);
+  const [charge, setCharge] = useState<number>(10);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (space.entryTime) {
@@ -30,23 +29,51 @@ const ParkingDetailsModal: React.FC<ParkingDetailsModalProps> = ({
       const diffInMs = now.getTime() - space.entryTime.getTime();
       const diffInHours = diffInMs / (1000 * 60 * 60);
       setDuration(diffInHours);
-    }
-  }, [space.entryTime]);
 
-  const handleConfirmPayment = () => {
-    // Implement charge calculation logic here
-    let parkingCharge = 0;
-    if (duration <= 2) {
-      parkingCharge = 10;
-    } else {
-      parkingCharge = 10 + 5 * Math.ceil(duration - 2); // $10 for first 2 hours, $5 for each additional hour
+      let parkingCharge = 0;
+      if (duration <= 2) {
+        parkingCharge = 10;
+      } else {
+        parkingCharge = 10 + 20 * Math.ceil(duration - 2); // $10 for first 2 hours, $5 for each additional hour
+      }
+      setCharge(parkingCharge);
     }
-    console.log(parkingCharge);
+  }, [space.entryTime, duration]);
+
+  const handleConfirmPayment = async () => {
+    setIsLoading(true);
     // Make POST request to specified endpoint with parking details
-    // Assuming onConfirmPayment is a callback to handle payment confirmation
-    onConfirmPayment();
-    onDeallocate();
-    onClose();
+    const requestBody = JSON.stringify({
+      "car-registration": space.registration,
+      charge: charge,
+    });
+
+    try {
+      const response = await fetch("https://httpstat.us/200", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: requestBody,
+      });
+
+      if (response.ok) {
+        console.log("Payment successfully processed.");
+        onDeallocate();
+        onClose();
+      } else {
+        console.error("Failed to process payment.");
+      }
+    } catch (error) {
+      console.error("Error occurred while processing payment:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatTime = (time: Date | null) => {
+    if (!time) return "";
+    return time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -68,21 +95,41 @@ const ParkingDetailsModal: React.FC<ParkingDetailsModalProps> = ({
           Car Registration: {space.registration}
         </Typography>
         <Typography variant="body1" gutterBottom>
+          Entry Time: {formatTime(space.entryTime)}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           Parking Duration: {duration.toFixed(2)} hours
         </Typography>
-        <div style={{ marginTop: 20 }}>
-          <Button variant="contained" color="primary" onClick={onDeallocate}>
-            Deallocate Parking Space
-          </Button>
+        <Typography variant="body1" gutterBottom>
+          Parking Charge: ${charge}
+        </Typography>
 
-          <Button
-            style={{ marginLeft: 10 }}
-            variant="contained"
-            color="secondary"
-            onClick={handleConfirmPayment}
-          >
-            Confirm Payment
-          </Button>
+        <div style={{ marginTop: 20 }}>
+          {isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : (
+            <>
+              <Button variant="contained" color="secondary" onClick={onClose}>
+                Back
+              </Button>
+              <Button
+                style={{ marginLeft: 10 }}
+                variant="contained"
+                color="primary"
+                onClick={handleConfirmPayment}
+              >
+                Pay
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </Modal>

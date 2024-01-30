@@ -11,14 +11,9 @@ interface ParkingSpaceProps {
     entryTime: Date | null;
   };
   onDeallocate: () => void;
-  onConfirmPayment: () => void;
 }
 
-const ParkingSpace: React.FC<ParkingSpaceProps> = ({
-  space,
-  onDeallocate,
-  onConfirmPayment,
-}) => {
+const ParkingSpace: React.FC<ParkingSpaceProps> = ({ space, onDeallocate }) => {
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
 
   const handleOpenDetailsModal = () => {
@@ -34,12 +29,15 @@ const ParkingSpace: React.FC<ParkingSpaceProps> = ({
       <Paper
         elevation={3}
         style={{
-          width: 50,
-          height: 20,
+          width: 100,
+          height: 50,
           margin: 5,
           padding: 5,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           cursor: space.occupied ? "pointer" : "default",
-          border: space.occupied ? "3px solid lime" : "2px solid transparent",
+          backgroundColor: space.occupied ? "lime" : " white",
         }}
         onClick={space.occupied ? handleOpenDetailsModal : undefined}
       >
@@ -52,7 +50,6 @@ const ParkingSpace: React.FC<ParkingSpaceProps> = ({
         onClose={handleCloseDetailsModal}
         space={space}
         onDeallocate={onDeallocate}
-        onConfirmPayment={onConfirmPayment}
       />
     </>
   );
