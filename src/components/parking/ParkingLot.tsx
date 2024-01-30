@@ -78,7 +78,7 @@ const ParkingLot: React.FC = () => {
         </Button>
       </Box>
       <div>
-        <Container style={{ display: "flex", flexWrap: "wrap" }}>
+        <Container style={{ display: "flex", flexWrap: "wrap" ,margin:'30px'}} >
           {parkingSpaces.map((spaceNumber, i) => (
             <ParkingSpace
               key={i}

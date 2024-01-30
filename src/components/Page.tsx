@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Input, Typography } from "@mui/material";
+import { Button, Container, TextField, Typography } from "@mui/material";
 
 const Page: React.FC = () => {
   const [numSpaces, setNumSpaces] = useState(0);
   const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNumSpaces(parseInt(event.target.value));
+    const enteredValue = event.target.value.trim();
+
+    const isValid = /^[1-9][0-9]*$/.test(enteredValue);
+
+    if (isValid) {
+      setNumSpaces(parseInt(enteredValue));
+    } else {
+      setNumSpaces("");
+    }
   };
 
   const handleSubmit = () => {
@@ -40,14 +48,14 @@ const Page: React.FC = () => {
         <Typography variant="body1" gutterBottom>
           Please enter the number of parking spaces
         </Typography>
-        <Input
-          type="number"
+        <TextField
+          type="text"
           value={numSpaces}
           onChange={handleChange}
           placeholder="Enter the Parking Space"
           id="parking-create-text-input"
           // ID for the text input
-          inputProps={{ style: { color: "white" }, pattern: "[1,4]" }}
+          inputProps={{ style: { color: "white" } }}
           sx={{
             mb: 2,
             borderRadius: "10px",

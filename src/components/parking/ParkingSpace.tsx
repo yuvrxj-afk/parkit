@@ -27,7 +27,8 @@ const ParkingSpace: React.FC<ParkingSpaceProps> = ({ space, onDeallocate }) => {
   return (
     <>
       <Paper
-        elevation={3}
+        // elevation={3}
+        variant='outlined'
         style={{
           width: 100,
           height: 50,
