@@ -7,7 +7,15 @@ const Page: React.FC = () => {
   const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNumSpaces(parseInt(event.target.value));
+    const enteredValue = event.target.value.trim();
+
+    const isValid = /^[1-9][0-9]*$/.test(enteredValue);
+
+    if (isValid) {
+      setNumSpaces(parseInt(enteredValue));
+    } else {
+      setNumSpaces("");
+    }
   };
 
   const handleSubmit = () => {
@@ -41,7 +49,7 @@ const Page: React.FC = () => {
           Please enter the number of parking spaces
         </Typography>
         <TextField
-          type="number"
+          type="text"
           value={numSpaces}
           onChange={handleChange}
           placeholder="Enter the Parking Space"

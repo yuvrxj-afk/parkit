@@ -22,7 +22,19 @@ const CarRegistrationModal: React.FC<CarRegistrationModalProps> = ({
   const [registration, setRegistration] = useState<string>("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRegistration(event.target.value);
+    const enteredValue = event.target.value
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "");
+
+    setRegistration(enteredValue);
+  };
+
+  const handleBlur = () => {
+    const isValid = /^[A-Z]{2}\d{2}[A-Z]{2}\d{4}$/.test(registration);
+    if (!isValid) {
+      alert("Please enter a valid car registration in the given format");
+    }
   };
 
   const handleSubmit = () => {
@@ -38,11 +50,18 @@ const CarRegistrationModal: React.FC<CarRegistrationModalProps> = ({
           placeholder="Car Number"
           value={registration}
           onChange={handleChange}
+          onBlur={handleBlur}
+          helperText={"MP09UV0007"}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button
+          onClick={handleSubmit}
+          disabled={!registration}
+          variant="contained"
+          color="primary"
+        >
           Submit
         </Button>
       </DialogActions>
