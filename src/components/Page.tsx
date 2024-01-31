@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Container, TextField, Typography } from "@mui/material";
 
 const Page: React.FC = () => {
-  const [numSpaces, setNumSpaces] = useState(0);
+  const [numSpaces, setNumSpaces] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -12,14 +12,14 @@ const Page: React.FC = () => {
     const isValid = /^[1-9][0-9]*$/.test(enteredValue);
 
     if (isValid) {
-      setNumSpaces(parseInt(enteredValue));
+      setNumSpaces(enteredValue);
     } else {
       setNumSpaces("");
     }
   };
 
   const handleSubmit = () => {
-    if (numSpaces > 0) {
+    if (parseInt(numSpaces) > 0) {
       navigate(`/parkinglot/${numSpaces}`);
     } else {
       alert("Please enter a valid number of parking spaces.");

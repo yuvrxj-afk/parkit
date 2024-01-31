@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from "@mui/material";
+import { Button, Modal, TextField } from "@mui/material";
 
 interface CarRegistrationModalProps {
   open: boolean;
@@ -43,29 +36,39 @@ const CarRegistrationModal: React.FC<CarRegistrationModalProps> = ({
   };
 
   return (
-    <Dialog open={open} sx={{ height: "550px" }} onClose={onClose}>
-      <DialogTitle>Add Car Registration</DialogTitle>
-      <DialogContent sx={{ padding: "20px" }}>
+    <Modal open={open} onClose={onClose}>
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          backgroundColor: "#fff",
+          padding: 20,
+        }}
+      >
+        <h2>Add Car</h2>
         <TextField
           placeholder="Car Number"
           value={registration}
           onChange={handleChange}
           onBlur={handleBlur}
-          helperText={"MP09UV0007"}
+          helperText="required form - MP09UV0007*"
         />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!registration}
-          variant="contained"
-          color="primary"
-        >
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <div style={{ marginTop: 20 }}>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!registration}
+            variant="contained"
+            color="primary"
+            style={{ marginLeft: 10 }}
+          >
+            Submit
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

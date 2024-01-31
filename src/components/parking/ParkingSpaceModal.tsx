@@ -29,16 +29,18 @@ const ParkingDetailsModal: React.FC<ParkingDetailsModalProps> = ({
       const diffInMs = now.getTime() - space.entryTime.getTime();
       const diffInHours = diffInMs / (1000 * 60 * 60);
       setDuration(diffInHours);
-
-      let parkingCharge = 0;
-      if (duration <= 2) {
-        parkingCharge = 10;
-      } else {
-        parkingCharge = 10 + 20 * Math.ceil(duration - 2); // $10 for first 2 hours, $5 for each additional hour
-      }
-      setCharge(parkingCharge);
     }
-  }, [space.entryTime, duration]);
+  }, [space.entryTime]);
+
+  useEffect(() => {
+    let parkingCharge = 0;
+    if (duration <= 2) {
+      parkingCharge = 10;
+    } else {
+      parkingCharge = 10 + 20 * Math.ceil(duration - 2); // $10 for first 2 hours, $5 for each additional hour
+    }
+    setCharge(parkingCharge);
+  }, [duration]);
 
   const handleConfirmPayment = async () => {
     setIsLoading(true);
@@ -61,8 +63,6 @@ const ParkingDetailsModal: React.FC<ParkingDetailsModalProps> = ({
         console.log("Payment successfully processed.");
         onDeallocate();
         onClose();
-      } else {
-        console.error("Failed to process payment.");
       }
     } catch (error) {
       console.error("Error occurred while processing payment:", error);
