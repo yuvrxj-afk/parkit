@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, Container, Typography } from "@mui/material";
 import ParkingSpace from "./ParkingSpace";
@@ -15,6 +15,7 @@ const ParkingLot: React.FC = () => {
   } = useParkingContext();
 
   useEffect(() => {
+    // Initialize parking space data if not found in local storage
     const parkingSpaceDesign = Array.from(
       { length: parseInt(spaces) },
       (_m, index) => ({
@@ -27,8 +28,7 @@ const ParkingLot: React.FC = () => {
     dispatch({ type: "SET_PARKING_SPACES", payload: parkingSpaceDesign });
   }, [dispatch, spaces]);
 
-  const [showModal, setShowModal] = React.useState<boolean>(false);
-  // const [parkingSpaces, setParkingSpaces] = useState(parkingSpaceDesign);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -48,8 +48,6 @@ const ParkingLot: React.FC = () => {
         payload: { spaceId: randomSpace.id, registration },
       });
       setShowModal(false);
-    } else {
-      alert("Parking is full.");
     }
   };
 
@@ -78,7 +76,9 @@ const ParkingLot: React.FC = () => {
         </Button>
       </Box>
       <div>
-        <Container style={{ display: "flex", flexWrap: "wrap" ,margin:'30px'}} >
+        <Container
+          style={{ display: "flex", flexWrap: "wrap", margin: "30px" }}
+        >
           {parkingSpaces.map((spaceNumber, i) => (
             <ParkingSpace
               key={i}
